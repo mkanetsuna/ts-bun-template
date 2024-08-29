@@ -1,7 +1,9 @@
 import { serve } from "bun";
 
+const port = process.env.PORT || 3000;
+
 const server = serve({
-  port: 3000,
+  port: Number(port),
   fetch(req) {
     return new Response("Welcome to the TypeScript Bun server!");
   },
