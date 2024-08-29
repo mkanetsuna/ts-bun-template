@@ -1,0 +1,11 @@
+{
+    "name": "typescript-bun-template",
+    "version": "1.0.0",
+    "scripts": {
+      "start": "bun run src/index.ts",
+      "build": "bun build src/index.ts --outdir=dist"
+    },
+    "devDependencies": {
+      "bun-types": "latest"
+    }
+  }
