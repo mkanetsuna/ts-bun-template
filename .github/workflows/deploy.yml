@@ -49,20 +49,44 @@ jobs:
 
     - name: Set up Cloud Scheduler
       run: |
-        gcloud scheduler jobs create http $SCHEDULER_NAME \
-          --schedule "0 0 * * *" \
-          --time-zone "UTC" \
-          --uri "$SERVICE_URL" \
-          --http-method GET \
-          --region $REGION \
-          --description "Daily run of $SERVICE_NAME" || \
-        gcloud scheduler jobs update http $SCHEDULER_NAME \
-          --schedule "0 0 * * *" \
-          --time-zone "UTC" \
-          --uri "$SERVICE_URL" \
-          --http-method GET \
-          --region $REGION \
-          --description "Daily run of $SERVICE_NAME"
+        set -e  # エラーが発生した時点でスクリプトを終了
+  
+        # 必要な環境変数が設定されていることを確認
+        if [ -z "$SERVICE_NAME" ] || [ -z "$REGION" ] || [ -z "$SCHEDULER_JOB_NAME" ] || [ -z "$SCHEDULER_TIMEZONE" ]; then
+          echo "Error: Required environment variables are not set."
+          exit 1
+        fi
+    
+        # Cloud Run サービスのURLを取得
+        SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region $REGION --format 'value(status.url)')
+        if [ -z "$SERVICE_URL" ]; then
+          echo "Error: Failed to retrieve Cloud Run service URL."
+          exit 1
+        fi
+    
+        SCHEDULER_HTTP_TARGET="${SERVICE_URL}/scheduled-task"
+        echo "Scheduler will target: $SCHEDULER_HTTP_TARGET"
+            
+        # Check if the job already exists
+        if gcloud scheduler jobs describe $SCHEDULER_JOB_NAME --location $REGION 2>/dev/null; then
+          echo "Updating existing Cloud Scheduler job: $SCHEDULER_JOB_NAME"
+          gcloud scheduler jobs update http $SCHEDULER_JOB_NAME \
+            --location $REGION \
+            --schedule "0 8 * * 1-5" \
+            --time-zone $SCHEDULER_TIMEZONE \
+            --uri "$SCHEDULER_HTTP_TARGET" \
+            --http-method GET
+        else
+          echo "Creating new Cloud Scheduler job: $SCHEDULER_JOB_NAME"
+          gcloud scheduler jobs create http $SCHEDULER_JOB_NAME \
+            --location $REGION \
+            --schedule "0 8 * * 1-5" \
+            --time-zone $SCHEDULER_TIMEZONE \
+            --uri "$SCHEDULER_HTTP_TARGET" \
+            --http-method GET
+        fi
+    
+        echo "Cloud Scheduler job setup completed successfully."
 
     - name: Lint and format check
       run: |
