@@ -2,13 +2,20 @@
     "name": "typescript-bun-template",
     "version": "1.0.0",
     "scripts": {
-      "start": "bun run src/index.ts",
-      "build": "bun build src/index.ts --outdir=dist",
-      "dev": "bun --watch run src/index.ts"
+        "start": "bun run src/index.ts",
+        "build": "bun build src/index.ts --outdir=dist",
+        "dev": "bun --hot run src/index.ts",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "lint": "eslint \"src/**/*.ts\" --fix"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "devDependencies": {
-      "bun-types": "latest"
+        "@typescript-eslint/eslint-plugin": "^8.3.0",
+        "@typescript-eslint/parser": "^8.3.0",
+        "bun-types": "latest",
+        "eslint": "^9.9.1",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "prettier": "^3.3.3"
     }
-  }
+}
