@@ -46,3 +46,24 @@ jobs:
           --platform managed \
           --region us-central1 \
           --allow-unauthenticated
+
+    - name: Set up Cloud Scheduler
+      run: |
+        gcloud scheduler jobs create http $SCHEDULER_NAME \
+          --schedule "0 0 * * *" \
+          --time-zone "UTC" \
+          --uri "$SERVICE_URL" \
+          --http-method GET \
+          --region $REGION \
+          --description "Daily run of $SERVICE_NAME" || \
+        gcloud scheduler jobs update http $SCHEDULER_NAME \
+          --schedule "0 0 * * *" \
+          --time-zone "UTC" \
+          --uri "$SERVICE_URL" \
+          --http-method GET \
+          --region $REGION \
+          --description "Daily run of $SERVICE_NAME"
+
+    - name: Lint and format check
+      run: |
+        bun run format

@@ -1,15 +1,22 @@
-module.exports = {
-    parser: '@typescript-eslint/parser',
-    extends: [
-      'plugin:@typescript-eslint/recommended',
-      'prettier/@typescript-eslint',
-      'plugin:prettier/recommended',
-    ],
-    parserOptions: {
-      ecmaVersion: 2020,
-      sourceType: 'module',
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ['src/**/*.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
     },
     rules: {
       // カスタムルールをここに追加
     },
-  };
+  }
+);
