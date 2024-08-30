@@ -1,0 +1,22 @@
+{
+	"name": "TypeScript Bun Development",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"forwardPorts": [8080],
+	"postCreateCommand": "bun install",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"visualstudioexptteam.vscodeintellicode"
+			],
+			"settings": {
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "esbenp.prettier-vscode"
+			}
+		}
+	},
+	"remoteUser": "node"
+}
